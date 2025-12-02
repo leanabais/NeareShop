@@ -8,10 +8,7 @@
 }
 
 .logo img {
-    width: 90px;
-    height: 90px;
-    border-radius: 50%;
-    object-fit: cover;
+    width: 10vh;
 }
 
 .nav-bar ul {
@@ -29,11 +26,20 @@
     transition: all 0.5s ease;
 }
 
-.nav-bar a:hover{
+.nav-bar a:hover {
     background-color: rgb(201, 30, 30);
     color: white;
     padding: 12px;
     border-radius: 8%;
+}
+
+.nav-bar a:hover .cart-icon {
+    filter: invert(1) brightness(2);
+}
+
+.cart-icon {
+    width: 2vh;
+
 }
 
 /* ---- Main ---- */
@@ -64,37 +70,36 @@ p {
 }
 
 
-.productos-contenedor {
-    background-color: rgb(245, 245, 245);
+#productos-contenedor {
+    max-width: 1200px;
     display: flex;
     flex-wrap: wrap;
     gap: 1vw;
-    padding: 2vw;
     justify-content: center;
-    border-radius: 20px;
-}
-
-.productos-contenedor .item {
-    background-color: rgb(255, 255, 255);
-    flex: 0 1 230px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    border-radius: 20px;
-    margin: 1vw;
-    box-sizing: border-box;
+    background-color: rgb(245, 245, 245);
     padding: 2vw;
+    border-radius: 20px;
+    margin: 0 auto;
 }
 
-.productos-contenedor .item:hover{
+#productos-contenedor .item {
+    flex: 0 1 calc(23.66% - 1vw);
+    background-color: rgb(231, 231, 231);
+    border-radius: 20px;
+    overflow: hidden;
+    text-align: center;
+    padding: 10px;
+    transition: transform 0.3s ease;
+}
+
+#productos-contenedor .item:hover{
     scale: 1.05;
     transition: scale 0.5s ease;
     
 }
 
-.productos-contenedor .item img {
-    width: 100%;
+#productos-contenedor .item img {
+    width: 15vh;
     aspect-ratio: 1 / 1;
     object-fit: cover;
     border-radius: 20px;
@@ -118,6 +123,37 @@ p {
     box-shadow: 0 4px 8px rgba(0,0,0,0.5);
     font-family: "Kanit", sans-serif;
     font-weight: 400;
+}
+
+#carrito-popup {
+    position: fixed;
+    top: 60px;
+    right: 20px;
+    width: 300px;
+    max-height: 70vh;
+    overflow-y: auto;
+    background-color: white;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    z-index: 1000;
+}
+
+.hidden {
+    display: none;
+}
+
+#carrito-popup ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+#carrito-popup li {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
 }
 
 /* ---- Reseñas ---- */
@@ -151,7 +187,7 @@ p {
 #contacto input,
 #contacto textarea {
     width: 100%;
-    padding: 15px 15px;
+    padding: 0.3vw;
     border: 3px solid #cccccc;
     border-radius: 8px;
     font-size: 15px;
@@ -192,6 +228,8 @@ form{
     font-size: 0.9rem;
 }
 
+
+
 /* ---- Media Queries ---- */
 
 
@@ -203,6 +241,9 @@ form{
     #form{
         display: flex;
         text-align: center;
+    }
+    #productos-contenedor .item {
+        flex: 0 1 45%; /* 2 por fila */
     }
 }
 
@@ -220,8 +261,8 @@ form{
     }
 
     /* ---- Main ---- */
-    .productos-contenedor .item{
-            flex: 0 1 120px;
+    #productos-contenedor .item{
+            flex: 0 1 90%;
     }
     h2, p {
         font-size: 2vh;
@@ -250,5 +291,4 @@ form{
         padding: 1.2vw;
         font-size: 3vw;
     }
-
 }
