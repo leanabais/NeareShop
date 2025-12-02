@@ -1,6 +1,6 @@
+// función para guardar el carrito al cerrar la pagina con localstorage, .stringify para pasarlo a texto y .parse para leerlo a json.
 let carrito = [];
 
-// función para guardar el carrito al cerrar la pagina con localstorage, .stringify para pasarlo a texto y .parse para leerlo a json.
 function guardarCarrito() {
     localStorage.setItem("carrito", JSON.stringify(carrito));
 }
@@ -8,7 +8,11 @@ function guardarCarrito() {
 function cargarCarrito() {
     const guardado = localStorage.getItem("carrito");
     if (guardado) {
-        carrito = JSON.parse(guardado);
+        carrito = JSON.parse(guardado).map(item => ({
+            ...item,
+            cantidad: item.cantidad ?? 1,    // ← si no tiene cantidad, se la pone
+            price: Number(item.price)        // ← asegura que sea número
+        }));
     }
 }
 cargarCarrito();
@@ -21,17 +25,45 @@ function actualizarCarrito() {
     ul.innerHTML = '';
     let total = 0;
 
-    carrito.forEach(item => {
+    carrito.forEach((item, index) => {
         const li = document.createElement('li');
-        li.textContent = `${item.title} - $${item.price}`;
+        li.innerHTML = `
+            ${item.title} - $${item.price} x ${item.cantidad}
+            <button class="menos">-</button>
+            <button class="mas">+</button>
+            <button class="borrar">Eliminar</button>
+        `;
+
+        // Restar cantidad
+        li.querySelector('.menos').addEventListener('click', () => {
+            if (item.cantidad > 1) {
+                item.cantidad--;
+            } else {
+                carrito.splice(index, 1); // si queda en 0 se elimina
+            }
+            actualizarCarrito();
+        });
+
+        // Sumar cantidad
+        li.querySelector('.mas').addEventListener('click', () => {
+            item.cantidad++;
+            actualizarCarrito();
+        });
+
+        // Eliminar producto
+        li.querySelector('.borrar').addEventListener('click', () => {
+            carrito.splice(index, 1);
+            actualizarCarrito();
+        });
+
         ul.appendChild(li);
-        total += item.price;
+        total += item.price * item.cantidad;
     });
 
     document.getElementById('carrito-total').textContent = total.toFixed(2);
-
-    guardarCarrito(); // ← guarda cada actualización
+    
 }
+
 
 // se carga la api fake, se pasa a array/objeto para que se pueda leer.
 // productos mostrados en un div con clase item para darle estilos, con img, h4, p, y button de agregar al carrito.
@@ -45,22 +77,34 @@ async function mostrarProductos() {
         const contenedor = document.getElementById('productos-contenedor');
 
         productos.forEach(p => {
-            const caja = document.createElement('div');
-            caja.classList.add('item');
+            const card = document.createElement('div');
+            card.classList.add('item');
 
-            caja.innerHTML = `
+            card.innerHTML = `
                 <img src="${p.image}" alt="${p.title}">
                 <h4>${p.title}</h4>
                 <p>$${p.price}</p>
                 <button class="btn-carrito">Agregar al carrito</button>
             `;
 
-            caja.querySelector(".btn-carrito").addEventListener("click", () => {
-                carrito.push({ title: p.title, price: p.price });
-                actualizarCarrito();
+            // 👉 ACÁ ESTÁ LA FUNCIÓN DE AGREGAR
+            card.querySelector(".btn-carrito").addEventListener("click", () => {
+                const existente = carrito.find(i => i.title === p.title);
+
+                if (existente) {
+                    existente.cantidad++; // si ya estaba, sumamos cantidad
+                } else {
+                    carrito.push({
+                        title: p.title,
+                        price: p.price,
+                        cantidad: 1   // ← IMPORTANTE!
+                    });
+                }
+
+                actualizarCarrito(); // actualiza lista + total + localStorage
             });
 
-            contenedor.appendChild(caja);
+            contenedor.appendChild(card);
         });
 
     } catch (error) {
